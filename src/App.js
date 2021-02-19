@@ -4,7 +4,7 @@ import './styles/App.css';
 function App() {
   return (
     <div>
-      "Tic-Tik-Toe"
+      <Board/>
     </div>
   );
 }
