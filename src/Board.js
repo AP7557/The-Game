@@ -1,22 +1,38 @@
-import { React, useState } from 'react'
+import { React, useState, useEffect } from 'react'
 import './styles/Board.css';
 import { BoardBox } from './BoardBox.js'
+import io from 'socket.io-client';
+
+const socket = io(); // Connects to socket connection
 
 export function Board() {
     const [board, setBoard] = useState(Array(9).fill(null));
-    let [OX, setOX] = useState(1);
+    let [OX, setOX] = useState(true);
 
     const onClickButton = (id) => {
         let userClick = [...board]
         if (!userClick[id]) {
-            userClick[id] = (OX == 1) ? 'X' : 'O'
-            setOX(!OX)
+            userClick[id] = OX ? 'X' : 'O'
+            // setOX(!OX)
         }
         setBoard(userClick)
+        socket.emit('click', { message: userClick, OX: OX });
     }
+
+    useEffect(() => {
+        socket.on('click', (data) => {
+            console.log(data);
+            let userClick = [...data.message]
+
+            setBoard(userClick);
+            console.log(data.OX)
+            setOX(!data.OX)
+        });
+    }, []);
+
     return (
-        <div className="board" >
-        {board.map((value, i)=><BoardBox value={value} onClickButton={()=>onClickButton(i)}/>)}
+        <div>
+            <div className = "board" > { board.map((value, i) => <BoardBox value={value} onClickButton={()=>onClickButton(i)}/>) }</div>
         </div>
     )
 }
