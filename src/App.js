@@ -6,7 +6,7 @@ import { Board } from './Board.js'
 function App() {
   return (
     <div>
-      <Board/>
+      "Tic-Tik-Toe"
     </div>
   );
 }
