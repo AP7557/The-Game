@@ -8,14 +8,11 @@ const socket = io(); // Connects to socket connection
 export function Board() {
     const [board, setBoard] = useState(Array(9).fill(null));
     let [OX, setOX] = useState(true);
-    // const username = (prev) => {
-    //     [...prev, user]
-    // }
+    
     const onClickButton = (id) => {
         let userClick = [...board]
         if (!userClick[id]) {
             userClick[id] = OX ? 'X' : 'O'
-            // setOX(!OX)
         }
         setBoard(userClick)
 
@@ -35,7 +32,9 @@ export function Board() {
 
     return (
         <div>
-            <div className = "board" > { board.map((value, i) => <BoardBox key={i} value={value} onClickButton={()=>onClickButton(i)}/>) }</div>
+            <div className = "board" >
+                { board.map((value, i) => <BoardBox key={i} value={value} onClickButton={()=>onClickButton(i)}/>) }
+            </div>
         </div>
     )
 }
