@@ -11,7 +11,6 @@ function App() {
     let [user, setUserName] = useState("")
 
     const signin = (username) => {
-        console.log(username + "test" + typeof(username))
         if (username != "") {
             isLogin(!login)
             setUserName(username)
@@ -30,6 +29,7 @@ function App() {
     })
     return (
         <div>
+            <h1 className="game"> Tic-Tac-Toe</h1>
             {login ?
                 (<Board user={user}/>):
                 <Login signin={signin}/>}

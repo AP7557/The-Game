@@ -8,7 +8,7 @@ export function BoardBox({ onClickButton, value, won, user }) {
     let [player, setPlayer] = useState(false)
     const helperClick = () => {
         if (player) {
-            if (!won) {
+            if (!won.won) {
                 onClickButton()
             }
             if (value == switchXO) {
@@ -20,7 +20,6 @@ export function BoardBox({ onClickButton, value, won, user }) {
     useEffect(() => {
         socket.on('username', (data) => {
             if (user == data['players'][0] || user == data['players'][1]) {
-                console.log(user)
                 setPlayer(true)
             }
         })

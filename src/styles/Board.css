@@ -1,7 +1,7 @@
 .board {
 	text-align: center;
 	margin: auto;
-	font-size: 20px;
+	font-size: 50px;
 	width: 300px; /* Total horizontal dimensions */
 	height: 300px; /* Total vertical dimensions */
 	display: grid; /* Enables CSS Grid */
@@ -10,19 +10,38 @@
 }
 
 .box {
-  border: 1px solid black; /* Shows the lines in the CSS grid */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid black; /* Shows the lines in the CSS grid */
 }
 
 .window{
-	/*display: grid; */
-	/*grid-template-columns: auto auto auto;*/
-	/*text-align: center;*/
+	text-align: center;
 	display: grid;
-	grid-template-columns: auto auto auto;
+	grid-template-columns: auto auto;
 	padding: 10px;
 }
-col{
+.col{
+	min-height: 500px;
+	display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 	padding: 20px;
-	font-size: 30px;
-	text-align: center;
+	font-size: 20px;
+}
+
+.reset_button{
+	border-radius: 6px;
+    padding: 10px 24px;
+    background-color: darkgray;
+    cursor: pointer;
+}
+
+.winner{
+	box-shadow:0 0 15px 4px lightblue;
+	color: chartreuse;
+	display:flex;
+	justify-content:center;
 }
