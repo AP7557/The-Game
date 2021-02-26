@@ -38,23 +38,30 @@ def on_Click(data): # data is whatever arg you pass in your emit call on client
     # the client that emmitted the event that triggered this function
     socketio.emit('click',  data, broadcast=True, include_self=False)
 
-prevUsers = []
+dic = {
+    'players': [],
+    'spec': []
+}
 @socketio.on('username')
-def on_UserName(data): # data is whatever arg you pass in your emit call on client
-    print(str(data))
-    # print(datauser)
-    if(data['user'] not in prevUsers):
-        prevUsers.append(data['user'])
-    data['user'] = prevUsers
-    # This emits the 'click' event from the server to all clients except for
-    # the client that emmitted the event that triggered this function
-    socketio.emit('username',  data, broadcast=True, include_self=False)
+def on_UserName(data):
+    print("MOUNT", str(data))
+    if(len(dic['players']) < 2):
+        dic['players'].append(data['username'])
+    else:
+        dic['spec'].append(data['username'])
+    print(dic)
+    socketio.emit('username', dic, broadcast=True, include_self=False)
 
 @socketio.on('logout')
-def on_Logout(data): # data is whatever arg you pass in your emit call on client
-    print(str(data))
-    # This emits the 'click' event from the server to all clients except for
-    # the client that emmitted the event that triggered this function
+def on_Logout(data):
+    print("UNMOUNT", str(data))
+    if(data in dic['players']):
+       dic['players'].pop(dic['players'].index(data['user']))
+       dic['players'].append(dic['spec'].pop(0))
+    else:
+        dic['spec'].pop(dic['spec'].index(data['user']))
+
+    print(dic)
     socketio.emit('logout',  data, broadcast=True, include_self=False)
 
 # Note that we don't call app.run anymore. We call socketio.run with app arg
