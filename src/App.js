@@ -12,7 +12,9 @@ function App() {
 
     const signin = (username) => {
         if (username != "") {
-            isLogin(!login)
+            isLogin((prev) => {
+                return !prev
+            })
             setUserName(username)
             socket.emit('username', { username });
         }

@@ -38,20 +38,40 @@ def on_Click(data): # data is whatever arg you pass in your emit call on client
     # the client that emmitted the event that triggered this function
     socketio.emit('click',  data, broadcast=True, include_self=False)
 
-allUsers = []
+dic = {
+    "X": "",
+    "O": "",
+    "spec": []
+}
 @socketio.on('username')
 def on_UserName(data):
     print("MOUNT", str(data))
-    allUsers.append(data['username'])
-    print(allUsers)
-    socketio.emit('username', allUsers, broadcast=True, include_self=False)
+    if dic["X"] == "":
+        dic["X"] = data['username']
+    elif dic["O"] == "":
+        dic["O"] = data['username']
+    else:
+        dic['spec'].append(data['username'])
+    print(dic)
+    socketio.emit('username', dic, broadcast=True, include_self=False)
 
 @socketio.on('logout')
 def on_Logout(data):
     print("UNMOUNT", str(data))
-    allUsers.pop(allUsers.index(data['user']))
-
-    socketio.emit('logout',  data, broadcast=True, include_self=False)
+    if(data['user'] != ""):
+        if dic["X"] == data['user']:
+            dic["X"] = ""
+        elif dic["O"] == data['user']:
+            dic["O"] = ""
+        else:
+            dic['sepc'].pop(dic['sepc'].index(data['user']))
+            nextUser = dic['sepc'].pop(0)
+            if dic["X"] == "":
+                dic["X"] = nextUser
+            elif dic["O"] == "":
+                dic["O"] = nextUser
+    print(dic)
+    socketio.emit('logout',  dic, broadcast=True, include_self=False)
 
 # Note that we don't call app.run anymore. We call socketio.run with app arg
 socketio.run(

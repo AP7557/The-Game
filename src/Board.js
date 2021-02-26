@@ -11,18 +11,26 @@ export function Board({ user }) {
     const [board, setBoard] = useState(Array(9).fill(null));
     let [OX, setOX] = useState(true);
     let [won, isWon] = useState({ won: false, win: "" });
-    let [allPlayers, setAllPlayers] = useState([])
+    let [allPlayers, setAllPlayers] = useState({ "X": "", "O": "", "spec": [] })
 
     const onClickButton = (id) => {
         let userClick = [...board]
         if (!userClick[id]) {
-            userClick[id] = OX ? 'X' : 'O'
+            if (user == allPlayers["X"]) {
+                userClick[id] = "X"
+            }
+            if (user == allPlayers["O"]) {
+                userClick[id] = "O"
+            }
         }
         if (winner(userClick) == 'X') {
-            isWon({ won: true, user: allPlayers[0] })
+            isWon({ won: true, user: allPlayers["X"] })
         }
         else if (winner(userClick) == 'O') {
-            isWon({ won: true, user: allPlayers[1] })
+            isWon({ won: true, user: allPlayers["O"] })
+        }
+        else if (winner(userClick) == "Draw") {
+            isWon({ won: true, user: "Draw" })
         }
         setBoard(userClick)
         socket.emit('click', { message: userClick, OX: OX });
@@ -37,19 +45,22 @@ export function Board({ user }) {
 
     useEffect(() => {
         socket.on('username', (data) => {
-            console.log(data)
-            setAllPlayers(data)
+            Object.keys(data).map((item) => {
+                setAllPlayers((prev) => ({
+                    ...prev,
+                    [item]: data[item]
+                }))
+            })
         })
+        //dic player x as key, player y as key, and spec as array
+
+        //counter, everytime click counter to 1
         socket.on('click', (data) => {
             let userClick = [...data.message]
             setBoard(userClick);
-            setOX(!data.OX)
-            // if (user == allPlayers[0]) {
-            //     setOX(!data.OX)
-            // }
-            // else if (user == allPlayers[1]) {
-            //     setOX(false)
-            // }
+            setOX((prev) => {
+                return !prev
+            })
         });
     }, []);
 
@@ -58,13 +69,15 @@ export function Board({ user }) {
             { won.won && <h1 className="winner" >Winner: {won.user}</h1> }
             <div className="window">
                 <div className="col">
-                    {allPlayers.map((player, i) => <Players key={i} i={i} player={player}/>)}
+                    <li className="Px">Player X: {allPlayers['X']}</li>
+                    <li className="Po">Player O: {allPlayers['O']}</li>
+                    {allPlayers['spec'].map((player, i) => <Players key={i} i={i} allPlayers={allPlayers} player={player}/>)}
                 </div>
                 <div className="col">
-                    {(user == allPlayers[0] || user == allPlayers[1]) && won.won
+                    {(user == allPlayers["X"] || user == allPlayers["O"]) && won.won
                         && <button className="reset_button" onClick={onReset}>Reset</button>}
                     <div className = "board">
-                        { board.map((value, i) => <BoardBox key={i} user={user} value={value} won={won} onClickButton={()=>onClickButton(i)}/>) }
+                        { board.map((value, i) => <BoardBox key={i} user={user} OX={OX} value={value} won={won} onClickButton={()=>onClickButton(i)}/>) }
                     </div>
                 </div>
             </div>
