@@ -18,12 +18,6 @@ export function Board({ user }) {
         if (!userClick[id]) {
             userClick[id] = OX ? 'X' : 'O'
         }
-        if (user == allPlayers[0]) {
-            setOX(true)
-        }
-        else if (user == allPlayers[1]) {
-            setOX(false)
-        }
         if (winner(userClick) == 'X') {
             isWon({ won: true, user: allPlayers[0] })
         }
@@ -42,16 +36,21 @@ export function Board({ user }) {
     }
 
     useEffect(() => {
+        socket.on('username', (data) => {
+            console.log(data)
+            setAllPlayers(data)
+        })
         socket.on('click', (data) => {
             let userClick = [...data.message]
             setBoard(userClick);
+            setOX(!data.OX)
+            // if (user == allPlayers[0]) {
+            //     setOX(!data.OX)
+            // }
+            // else if (user == allPlayers[1]) {
+            //     setOX(false)
+            // }
         });
-        socket.on('username', (data) => {
-            setAllPlayers([data['players'][0], data['players'][1]])
-            data['spec'].map(i => {
-                setAllPlayers((prev) => [...prev, i])
-            })
-        })
     }, []);
 
     return (

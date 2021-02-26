@@ -11,15 +11,15 @@ export function BoardBox({ onClickButton, value, won, user }) {
             if (!won.won) {
                 onClickButton()
             }
-            if (value == switchXO) {
-                onClickButton()
-                switchXO == 'X' ? setSwitchOX('O') : setSwitchOX('X')
-            }
+            // if (value == switchXO) {
+                //     onClickButton()
+                //     switchXO == 'X' ? setSwitchOX('O') : setSwitchOX('X')
+                // }
         }
     }
     useEffect(() => {
         socket.on('username', (data) => {
-            if (user == data['players'][0] || user == data['players'][1]) {
+            if (user == data[0] || user == data[1]) {
                 setPlayer(true)
             }
         })

@@ -38,30 +38,19 @@ def on_Click(data): # data is whatever arg you pass in your emit call on client
     # the client that emmitted the event that triggered this function
     socketio.emit('click',  data, broadcast=True, include_self=False)
 
-dic = {
-    'players': [],
-    'spec': []
-}
+allUsers = []
 @socketio.on('username')
 def on_UserName(data):
     print("MOUNT", str(data))
-    if(len(dic['players']) < 2):
-        dic['players'].append(data['username'])
-    else:
-        dic['spec'].append(data['username'])
-    print(dic)
-    socketio.emit('username', dic, broadcast=True, include_self=False)
+    allUsers.append(data['username'])
+    print(allUsers)
+    socketio.emit('username', allUsers, broadcast=True, include_self=False)
 
 @socketio.on('logout')
 def on_Logout(data):
     print("UNMOUNT", str(data))
-    if(data in dic['players']):
-       dic['players'].pop(dic['players'].index(data['user']))
-       dic['players'].append(dic['spec'].pop(0))
-    else:
-        dic['spec'].pop(dic['spec'].index(data['user']))
+    allUsers.pop(allUsers.index(data['user']))
 
-    print(dic)
     socketio.emit('logout',  data, broadcast=True, include_self=False)
 
 # Note that we don't call app.run anymore. We call socketio.run with app arg
