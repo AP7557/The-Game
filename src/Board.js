@@ -31,11 +31,11 @@ export function Board({ user }) {
             if (user == allPlayers[X]) {
                 userClick[id] = X
                 setX((prev) => {
-                    if (prev == "O") {
-                        return "X"
-                    }
-                    else {
+                    if (prev == "X") {
                         return "O"
+                    }
+                    else if (prev == "O") {
+                        return "X"
                     }
                 })
                 setBoard(userClick)
@@ -66,20 +66,20 @@ export function Board({ user }) {
         socket.on('click', (data) => {
             let userClick = [...data.message]
             setBoard(userClick);
+            console.log(data.X)
             isWon(false)
-
             if (winner((userClick))) {
                 isWon(true)
             }
-
             setX(() => {
-                if (data.X == "O") {
-                    return "X"
-                }
-                else {
+                if (data.X == "X") {
                     return "O"
                 }
+                else if (data.X == "O") {
+                    return "X"
+                }
             })
+            console.log(X)
         });
     }, []);
 
@@ -88,7 +88,6 @@ export function Board({ user }) {
             { won && <h1 className="winner" >Winner: {userWinner}</h1> }
             <div className="window">
                 <div className="col">
-                    <li className="current">Your UserName: {user}</li>
                     <li className="Px">Player X: {allPlayers['X']}</li>
                     <li className="Po">Player O: {allPlayers['O']}</li>
                     {allPlayers['spec'].map((player, i) => <Players key={i} player={player}/>)}

@@ -32,6 +32,7 @@ function App() {
     return (
         <div>
             <h1 className="game"> Tic-Tac-Toe</h1>
+            {user && <h4 className="current">Your Username: {user}</h4>}
             {login ?
                 (<Board user={user}/>):
                 <Login signin={signin}/>}
