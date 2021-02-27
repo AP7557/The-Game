@@ -8,7 +8,7 @@ export function BoardBox({ onClickButton, value, won, user }) {
 
     const helperClick = () => {
         if (player) {
-            if (!won.won) {
+            if (!won) {
                 onClickButton()
             }
         }

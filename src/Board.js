@@ -10,8 +10,19 @@ const socket = io(); // Connects to socket connection
 export function Board({ user }) {
     const [board, setBoard] = useState(Array(9).fill(null));
     let [X, setX] = useState("X");
-    let [won, isWon] = useState({ won: false, win: "" });
+    let [won, isWon] = useState(false);
     let [allPlayers, setAllPlayers] = useState({ "X": "", "O": "", "spec": [] })
+    let status = winner(board)
+    let userWinner = ""
+    if (status == "X") {
+        userWinner = allPlayers["X"]
+    }
+    else if (status == "O") {
+        userWinner = allPlayers["O"]
+    }
+    else if (status == "Draw") {
+        userWinner = status
+    }
 
     const onClickButton = (id) => {
         let userClick = [...board]
@@ -20,33 +31,27 @@ export function Board({ user }) {
             if (user == allPlayers[X]) {
                 userClick[id] = X
                 setX((prev) => {
-                    if (prev == "X") {
-                        return "O"
-                    }
-                    else {
+                    if (prev == "O") {
                         return "X"
                     }
+                    else {
+                        return "O"
+                    }
                 })
-                if (winner(userClick) == 'X') {
-                    isWon({ won: true, user: allPlayers["X"] })
-                }
-                else if (winner(userClick) == 'O') {
-                    isWon({ won: true, user: allPlayers["O"] })
-                }
-                else if (winner(userClick) == "Draw") {
-                    isWon({ won: true, user: "Draw" })
-                }
                 setBoard(userClick)
                 socket.emit('click', { message: userClick, X: X });
             }
+        }
+        if (winner((userClick))) {
+            isWon(true)
         }
     }
     const onReset = () => {
         let userClick = [...board]
         userClick.fill(null)
         setBoard(userClick)
-        socket.emit('click', { message: userClick });
-        isWon({ won: false, win: "" })
+        isWon(false)
+        socket.emit('click', { message: userClick, X: "O" });
     }
 
     useEffect(() => {
@@ -61,8 +66,12 @@ export function Board({ user }) {
         socket.on('click', (data) => {
             let userClick = [...data.message]
             setBoard(userClick);
-            console.log(data)
-            // setX(data.X)
+            isWon(false)
+
+            if (winner((userClick))) {
+                isWon(true)
+            }
+
             setX(() => {
                 if (data.X == "O") {
                     return "X"
@@ -76,15 +85,16 @@ export function Board({ user }) {
 
     return (
         <div>
-            { won.won && <h1 className="winner" >Winner: {won.user}</h1> }
+            { won && <h1 className="winner" >Winner: {userWinner}</h1> }
             <div className="window">
                 <div className="col">
+                    <li className="current">Your UserName: {user}</li>
                     <li className="Px">Player X: {allPlayers['X']}</li>
                     <li className="Po">Player O: {allPlayers['O']}</li>
-                    {allPlayers['spec'].map((player, i) => <Players key={i} i={i} allPlayers={allPlayers} player={player}/>)}
+                    {allPlayers['spec'].map((player, i) => <Players key={i} player={player}/>)}
                 </div>
                 <div className="col">
-                    {won.won
+                    {(user == allPlayers["X"] || user == allPlayers["O"]) && won
                         && <button className="reset_button" onClick={onReset}>Reset</button>}
                     <h4>Current Player: {allPlayers[X]}</h4>
                     <div className = "board">

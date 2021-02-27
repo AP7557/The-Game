@@ -46,9 +46,9 @@ dic = {
 @socketio.on('username')
 def on_UserName(data):
     print("MOUNT", str(data))
-    if dic["X"] == "":
+    if dic["X"] == "" or dic['X'] == data['username'] :
         dic["X"] = data['username']
-    elif dic["O"] == "":
+    elif dic["O"] == "" or dic['O'] == data['username']:
         dic["O"] = data['username']
     else:
         dic['spec'].append(data['username'])
