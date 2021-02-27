@@ -26,7 +26,6 @@ export function Board({ user }) {
 
     const onClickButton = (id) => {
         let userClick = [...board]
-        console.log(user, allPlayers[X], X)
         if (!userClick[id]) {
             if (user == allPlayers[X]) {
                 userClick[id] = X
