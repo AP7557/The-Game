@@ -1,11 +1,47 @@
 .board {
+	text-align: center;
+	margin: auto;
+	font-size: 50px;
 	width: 300px; /* Total horizontal dimensions */
 	height: 300px; /* Total vertical dimensions */
 	display: grid; /* Enables CSS Grid */
 	grid-template-columns: repeat(3, 1fr); /* Total horizontal space broken into 3 columns */
-  grid-template-rows: repeat(3, 1fr); /* Total vertical space broken into 3 rows */
+	grid-template-rows: repeat(3, 1fr); /* Total vertical space broken into 3 rows */
 }
 
 .box {
-  border: 1px solid black; /* Shows the lines in the CSS grid */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid black; /* Shows the lines in the CSS grid */
+}
+
+.window{
+	text-align: center;
+	display: grid;
+	grid-template-columns: auto auto;
+	padding: 10px;
+}
+.col{
+	min-height: 500px;
+	display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+	padding: 20px;
+	font-size: 20px;
+}
+
+.reset_button{
+	border-radius: 6px;
+    padding: 10px 24px;
+    background-color: darkgray;
+    cursor: pointer;
+}
+
+.winner{
+	box-shadow:0 0 15px 4px lightblue;
+	color: chartreuse;
+	display:flex;
+	justify-content:center;
 }

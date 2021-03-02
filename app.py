@@ -29,14 +29,49 @@ def on_connect():
 def on_disconnect():
     print('User disconnected!')
 
-# When a client emits the event 'chat' to the server, this function is run
-# 'chat' is a custom event name that we just decided
-@socketio.on('chat')
-def on_chat(data): # data is whatever arg you pass in your emit call on client
+# When a client emits the event 'click' to the server, this function is run
+# 'click' is a custom event name that we just decided
+@socketio.on('click')
+def on_Click(data): # data is whatever arg you pass in your emit call on client
     print(str(data))
-    # This emits the 'chat' event from the server to all clients except for
+    # This emits the 'click' event from the server to all clients except for
     # the client that emmitted the event that triggered this function
-    socketio.emit('chat',  data, broadcast=True, include_self=False)
+    socketio.emit('click',  data, broadcast=True, include_self=False)
+
+dic = {
+    "X": "",
+    "O": "",
+    "spec": []
+}
+@socketio.on('username')
+def on_UserName(data):
+    print("MOUNT", str(data))
+    if dic["X"] == "" or dic['X'] == data['username'] :
+        dic["X"] = data['username']
+    elif dic["O"] == "" or dic['O'] == data['username']:
+        dic["O"] = data['username']
+    else:
+        dic['spec'].append(data['username'])
+    print(dic)
+    socketio.emit('username', dic, broadcast=True, include_self=False)
+
+@socketio.on('logout')
+def on_Logout(data):
+    print("UNMOUNT", str(data))
+    if(data['currentUser'] != ""):
+        if dic["X"] == data['currentUser']:
+            dic["X"] = ""
+        elif dic["O"] == data['currentUser']:
+            dic["O"] = ""
+        else:
+            dic['sepc'].pop(dic['sepc'].index(data['currentUser']))
+            nextUser = dic['sepc'].pop(0)
+            if dic["X"] == "":
+                dic["X"] = nextUser
+            elif dic["O"] == "":
+                dic["O"] = nextUser
+    print(dic)
+    socketio.emit('logout',  dic, broadcast=True, include_self=False)
 
 # Note that we don't call app.run anymore. We call socketio.run with app arg
 socketio.run(
