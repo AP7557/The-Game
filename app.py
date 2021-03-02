@@ -58,13 +58,13 @@ def on_UserName(data):
 @socketio.on('logout')
 def on_Logout(data):
     print("UNMOUNT", str(data))
-    if(data['user'] != ""):
-        if dic["X"] == data['user']:
+    if(data['currentUser'] != ""):
+        if dic["X"] == data['currentUser']:
             dic["X"] = ""
-        elif dic["O"] == data['user']:
+        elif dic["O"] == data['currentUser']:
             dic["O"] = ""
         else:
-            dic['sepc'].pop(dic['sepc'].index(data['user']))
+            dic['sepc'].pop(dic['sepc'].index(data['currentUser']))
             nextUser = dic['sepc'].pop(0)
             if dic["X"] == "":
                 dic["X"] = nextUser

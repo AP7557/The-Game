@@ -8,14 +8,14 @@ const socket = io(); // Connects to socket connection
 
 function App() {
     let [login, isLogin] = useState(false)
-    let [user, setUserName] = useState("")
+    let [currentUser, setCurrentUserName] = useState("")
 
     const signin = (username) => {
         if (username != "") {
             isLogin((prev) => {
                 return !prev
             })
-            setUserName(username)
+            setCurrentUserName(username)
             socket.emit('username', { username });
         }
         else {
@@ -26,15 +26,15 @@ function App() {
     useEffect(() => {
         return () => {
             // This function will only be run when the component unmounts
-            socket.emit('logout', { user }) // your data here }});
+            socket.emit('logout', { currentUser }) // your data here }});
         }
     })
     return (
         <div>
             <h1 className="game"> Tic-Tac-Toe</h1>
-            {user && <h4 className="current">Your Username: {user}</h4>}
+            {currentUser && <h4 className="current">Your Username: {currentUser}</h4>}
             {login ?
-                (<Board user={user}/>):
+                (<Board currentUser={currentUser}/>):
                 <Login signin={signin}/>}
         </div>
     );

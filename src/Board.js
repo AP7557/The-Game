@@ -1,18 +1,18 @@
 import { React, useState, useEffect } from 'react'
 import './styles/Board.css';
 import { BoardBox } from './BoardBox.js'
-import { winner } from './Winner.js'
-import { Players } from './Players.js'
+import { getWinnerFunction } from './Winner.js'
 import io from 'socket.io-client';
 
 const socket = io(); // Connects to socket connection
 
-export function Board({ user }) {
+export function Board({ currentUser }) {
     const [board, setBoard] = useState(Array(9).fill(null));
-    let [X, setX] = useState("X");
-    let [won, isWon] = useState(false);
+    let [OXs, setOXs] = useState("X");
+    let [winner, setWinner] = useState(false);
     let [allPlayers, setAllPlayers] = useState({ "X": "", "O": "", "spec": [] })
-    let status = winner(board)
+
+    let status = getWinnerFunction(board)
     let userWinner = ""
     if (status == "X") {
         userWinner = allPlayers["X"]
@@ -27,9 +27,9 @@ export function Board({ user }) {
     const onClickButton = (id) => {
         let userClick = [...board]
         if (!userClick[id]) {
-            if (user == allPlayers[X]) {
-                userClick[id] = X
-                setX((prev) => {
+            if (currentUser == allPlayers[OXs]) {
+                userClick[id] = OXs
+                setOXs((prev) => {
                     if (prev == "X") {
                         return "O"
                     }
@@ -38,19 +38,20 @@ export function Board({ user }) {
                     }
                 })
                 setBoard(userClick)
-                socket.emit('click', { message: userClick, X: X });
+                socket.emit('click', { message: userClick, OXs });
             }
         }
-        if (winner((userClick))) {
-            isWon(true)
+        if (getWinnerFunction((userClick))) {
+            setWinner(true)
+            console.log(winner)
         }
     }
     const onReset = () => {
         let userClick = [...board]
         userClick.fill(null)
         setBoard(userClick)
-        isWon(false)
-        socket.emit('click', { message: userClick, X: "O" });
+        setWinner(false)
+        socket.emit('click', { message: userClick, OXs: "O" });
     }
 
     useEffect(() => {
@@ -65,38 +66,36 @@ export function Board({ user }) {
         socket.on('click', (data) => {
             let userClick = [...data.message]
             setBoard(userClick);
-            console.log(data.X)
-            isWon(false)
-            if (winner((userClick))) {
-                isWon(true)
+            setWinner(false)
+            if (getWinnerFunction((userClick))) {
+                setWinner(true)
             }
-            setX(() => {
-                if (data.X == "X") {
+            setOXs(() => {
+                if (data.OXs == "X") {
                     return "O"
                 }
-                else if (data.X == "O") {
+                else if (data.OXs == "O") {
                     return "X"
                 }
             })
-            console.log(X)
         });
     }, []);
 
     return (
         <div>
-            { won && <h1 className="winner" >Winner: {userWinner}</h1> }
+            { winner && <h1 className="winner" >Winner: {userWinner}</h1> }
             <div className="window">
                 <div className="col">
                     <li className="Px">Player X: {allPlayers['X']}</li>
                     <li className="Po">Player O: {allPlayers['O']}</li>
-                    {allPlayers['spec'].map((player, i) => <Players key={i} player={player}/>)}
+                    {allPlayers['spec'].map((player) => <li className="Ps"> Spectors: {player} </li>)}
                 </div>
                 <div className="col">
-                    {(user == allPlayers["X"] || user == allPlayers["O"]) && won
+                    {(currentUser == allPlayers["X"] || currentUser == allPlayers["O"]) && winner
                         && <button className="reset_button" onClick={onReset}>Reset</button>}
-                    <h4>Current Player: {allPlayers[X]}</h4>
+                    <h4>Current Player: {allPlayers[OXs]}</h4>
                     <div className = "board">
-                        { board.map((value, i) => <BoardBox key={i} user={user} value={value} won={won} onClickButton={()=>onClickButton(i)}/>) }
+                        { board.map((value, i) => <BoardBox key={i} currentUser={currentUser} value={value} winner={winner} onClickButton={()=>onClickButton(i)}/>) }
                     </div>
                 </div>
             </div>
