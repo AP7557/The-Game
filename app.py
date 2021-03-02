@@ -2,6 +2,10 @@ import os
 from flask import Flask, send_from_directory, json, session
 from flask_socketio import SocketIO
 from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv()) # This is to load your env variables from .env
 
 app = Flask(__name__, static_folder='./build/static')
 
@@ -37,6 +41,13 @@ def on_Click(data): # data is whatever arg you pass in your emit call on client
     # This emits the 'click' event from the server to all clients except for
     # the client that emmitted the event that triggered this function
     socketio.emit('click',  data, broadcast=True, include_self=False)
+
+@socketio.on('reset')
+def on_Reset(data): # data is whatever arg you pass in your emit call on client
+    print(str(data))
+    # This emits the 'click' event from the server to all clients except for
+    # the client that emmitted the event that triggered this function
+    socketio.emit('reset',  data, broadcast=True, include_self=False)
 
 dic = {
     "X": "",
