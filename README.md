@@ -13,7 +13,7 @@ The Game is an app that allows users to play a simple multiplayer Tic-Tac-Toe.
 - [x] Spectators (third user and after) are not able to play moves.
 - [x] To view the game, user must first “log in” with username
 - [x] Restart button and user list displayed and updated
-- [X] Emmit and handle
+- [x] Emmit and handle
 -       Turn played
 -       User joining
 -       Restarting game

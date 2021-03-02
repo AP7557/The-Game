@@ -1,4 +1,4 @@
-export function winner(squares) {
+export function getWinnerFunction(squares) {
     const lines = [
     [0, 1, 2],
     [3, 4, 5],
