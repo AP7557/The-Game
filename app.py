@@ -81,17 +81,32 @@ def on_UserName(data):
     print(dic)
     socketio.emit('username', dic, broadcast=True, include_self=False)
 
+@socketio.on('join')
+def on_join(data): # data is whatever arg you pass in your emit call on client
+    print(str(data))
+    new_user = models.Person(username=data['username'], score=100)
+    db.session.add(new_user)
+    db.session.commit()
+    all_people = models.Person.query.all()
+    users = []
+    for person in all_people:
+        users.append(person.username)
+
+    print(users)
+    socketio.emit('user_list', {'users': users})
+
 @socketio.on('logout')
 def on_Logout(data):
     print("UNMOUNT", str(data))
+    print(dic)
     if(data['currentUser'] != ""):
         if dic["X"] == data['currentUser']:
             dic["X"] = ""
         elif dic["O"] == data['currentUser']:
             dic["O"] = ""
         else:
-            dic['sepc'].pop(dic['sepc'].index(data['currentUser']))
-            nextUser = dic['sepc'].pop(0)
+            dic['spec'].pop(dic['spec'].index(data['currentUser']))
+            nextUser = dic['spec'].pop(0)
             if dic["X"] == "":
                 dic["X"] = nextUser
             elif dic["O"] == "":
@@ -99,9 +114,11 @@ def on_Logout(data):
     print(dic)
     socketio.emit('logout',  dic, broadcast=True, include_self=False)
 
+# Note we need to add this line so we can import app in the python shell
+if __name__ == "__main__":
 # Note that we don't call app.run anymore. We call socketio.run with app arg
-socketio.run(
-    app,
-    host=os.getenv('IP', '0.0.0.0'),
-    port=8081 if os.getenv('C9_PORT') else int(os.getenv('PORT', 8081)),
-)
+    socketio.run(
+        app,
+        host=os.getenv('IP', '0.0.0.0'),
+        port=8081 if os.getenv('C9_PORT') else int(os.getenv('PORT', 8081)),
+    )

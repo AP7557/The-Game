@@ -17,6 +17,7 @@ function App() {
                 return !prev
             })
             setCurrentUserName(username)
+            socket.emit('user_list', { username })
             socket.emit('username', { username });
         }
         else {
