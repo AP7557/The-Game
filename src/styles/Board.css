@@ -19,7 +19,7 @@
 .window{
 	text-align: center;
 	display: grid;
-	grid-template-columns: auto auto;
+	grid-template-columns: auto auto auto;
 	padding: 10px;
 }
 .col{

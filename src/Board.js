@@ -2,6 +2,7 @@ import { React, useState, useEffect } from 'react'
 import './styles/Board.css';
 import { BoardBox } from './BoardBox.js'
 import { getWinnerFunction } from './Winner.js'
+import { Leaderboard } from './Leaderboard.js'
 import io from 'socket.io-client';
 
 const socket = io(); // Connects to socket connection
@@ -11,14 +12,18 @@ export function Board({ currentUser }) {
     let [OXs, setOXs] = useState("X");
     let [winner, setWinner] = useState(false);
     let [allPlayers, setAllPlayers] = useState({ "X": "", "O": "", "spec": [] })
+    let [showLeaderboard, setShowLeaderboard] = useState(false)
+    let [userList, setUserList] = useState([]);
 
     let status = getWinnerFunction(board)
     let userWinner = ""
     if (status == "X") {
         userWinner = allPlayers["X"]
+        socket.emit('winner', { winner: allPlayers['X'], loser: allPlayers['O'] });
     }
     else if (status == "O") {
         userWinner = allPlayers["O"]
+        socket.emit('winner', { winner: allPlayers['O'], loser: allPlayers['X'] });
     }
     else if (status == "Draw") {
         userWinner = status
@@ -55,6 +60,11 @@ export function Board({ currentUser }) {
     }
 
     useEffect(() => {
+        socket.on('user_list', (data) => {
+            console.log('User list event received!');
+            console.log(data);
+            setUserList(data.users)
+        });
         socket.on('username', (data) => {
             Object.keys(data).map((item) => {
                 setAllPlayers((prev) => ({
@@ -102,6 +112,12 @@ export function Board({ currentUser }) {
                     <div className = "board">
                         { board.map((value, i) => <BoardBox key={i} currentUser={currentUser} value={value} winner={winner} onClickButton={()=>onClickButton(i)}/>) }
                     </div>
+                </div>
+                <div className="col">
+                    <button onClick={()=>{setShowLeaderboard((prev)=>!prev)}}>
+                        {showLeaderboard ? "Hide Leaderboard" : "Show Leaderboard"}
+                    </button>
+                    {showLeaderboard && <Leaderboard userList={userList}/>}
                 </div>
             </div>
         </div>

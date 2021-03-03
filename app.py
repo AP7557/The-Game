@@ -32,15 +32,23 @@ socketio = SocketIO(
 def index(filename):
     return send_from_directory('./build', filename)
 
+def add_db(username):
+    new_user = models.Person(username=username, score=100)
+    db.session.add(new_user)
+    db.session.commit()
+
+def print_db():
+    all_people = models.Person.query.order_by(models.Person.score.desc()).all()
+    users = []
+    for person in all_people:
+        users.append({'username': person.username, 'score': person.score})
+    return users
+
 # When a client connects from this Socket connection, this function is run
 @socketio.on('connect')
 def on_connect():
     print('User connected!')
-    all_people = models.Person.query.all()
-    users = []
-    for person in all_people:
-        users.append(person.username)
-    print(users)
+    users = print_db()
     socketio.emit('user_list', {'users': users})
 
 # When a client disconnects from this Socket connection, this function is run
@@ -56,6 +64,22 @@ def on_Click(data): # data is whatever arg you pass in your emit call on client
     # This emits the 'click' event from the server to all clients except for
     # the client that emmitted the event that triggered this function
     socketio.emit('click',  data, broadcast=True, include_self=False)
+
+@socketio.on('winner')
+def on_Winner(data): # data is whatever arg you pass in your emit call on client
+    print(data['winner'])
+    print(data['loser'])
+    user = models.Person.query.filter_by(username=data['winner']).first()
+    models.Person.query.filter_by(username=user.username).update({'score':user.score+1})
+    db.session.commit()
+    user = models.Person.query.filter_by(username=data['loser']).first()
+    models.Person.query.filter_by(username=user.username).update({'score':user.score-1})
+    db.session.commit()
+    users = print_db()
+    print(users)
+    # This emits the 'click' event from the server to all clients except for
+    # the client that emmitted the event that triggered this function
+    socketio.emit('user_list',  users, broadcast=True, include_self=False)
 
 @socketio.on('reset')
 def on_Reset(data): # data is whatever arg you pass in your emit call on client
@@ -84,16 +108,11 @@ def on_UserName(data):
 @socketio.on('join')
 def on_join(data): # data is whatever arg you pass in your emit call on client
     print(str(data))
-    new_user = models.Person(username=data['username'], score=100)
-    db.session.add(new_user)
-    db.session.commit()
-    all_people = models.Person.query.all()
-    users = []
-    for person in all_people:
-        users.append(person.username)
-
-    print(users)
-    socketio.emit('user_list', {'users': users})
+    user_in_db = models.Person.query.filter_by(username=data['username']).first()
+    if(user_in_db is None):
+        add_db(data['username'])
+        users = print_db()
+        socketio.emit('user_list', {'users': users})
 
 @socketio.on('logout')
 def on_Logout(data):
@@ -104,7 +123,7 @@ def on_Logout(data):
             dic["X"] = ""
         elif dic["O"] == data['currentUser']:
             dic["O"] = ""
-        else:
+        elif( data['currentUser'] in dic['spec']):
             dic['spec'].pop(dic['spec'].index(data['currentUser']))
             nextUser = dic['spec'].pop(0)
             if dic["X"] == "":
