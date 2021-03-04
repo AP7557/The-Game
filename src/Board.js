@@ -7,13 +7,12 @@ import io from 'socket.io-client';
 
 const socket = io(); // Connects to socket connection
 
-export function Board({ currentUser }) {
+export function Board({ currentUser, userList }) {
     const [board, setBoard] = useState(Array(9).fill(null));
     let [OXs, setOXs] = useState("X");
     let [winner, setWinner] = useState(false);
     let [allPlayers, setAllPlayers] = useState({ "X": "", "O": "", "spec": [] })
     let [showLeaderboard, setShowLeaderboard] = useState(false)
-    let [userList, setUserList] = useState([]);
 
     let status = getWinnerFunction(board)
     let userWinner = ""
@@ -112,9 +111,10 @@ export function Board({ currentUser }) {
                     <button onClick={()=>{setShowLeaderboard((prev)=>!prev)}}>
                         {showLeaderboard ? "Hide Leaderboard" : "Show Leaderboard"}
                     </button>
-                    {showLeaderboard && <Leaderboard userList={userList} setUserList={setUserList}/>}
-                </div>
+                    {showLeaderboard && <Leaderboard userList={userList}/>}
+                    </div>
             </div>
         </div>
     )
 }
+//
