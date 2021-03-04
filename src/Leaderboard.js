@@ -4,12 +4,19 @@ import io from 'socket.io-client';
 
 const socket = io(); // Connects to socket connection
 
-export function Leaderboard({ userList }) {
-    return (<div>{ console.log(userList) }
+export function Leaderboard({ userList, setUserList }) {
+    useEffect(() => {
+        socket.on('user_list', (data) => {
+            console.log('User list event received!');
+            console.log(data);
+            setUserList(data.users)
+        });
+    }, []);
+    return (
         <table>
             <thead>
                 <tr>
-                    <th colspan="2">Leaderboard</th>
+                    <th colSpan="2">Leaderboard</th>
                 </tr>
             </thead>
             <tbody>
@@ -20,5 +27,5 @@ export function Leaderboard({ userList }) {
                 )}
             </tbody>
         </table>
-        </div>)
+    )
 }

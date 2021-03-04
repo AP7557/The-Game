@@ -60,11 +60,6 @@ export function Board({ currentUser }) {
     }
 
     useEffect(() => {
-        socket.on('user_list', (data) => {
-            console.log('User list event received!');
-            console.log(data);
-            setUserList(data.users)
-        });
         socket.on('username', (data) => {
             Object.keys(data).map((item) => {
                 setAllPlayers((prev) => ({
@@ -117,7 +112,7 @@ export function Board({ currentUser }) {
                     <button onClick={()=>{setShowLeaderboard((prev)=>!prev)}}>
                         {showLeaderboard ? "Hide Leaderboard" : "Show Leaderboard"}
                     </button>
-                    {showLeaderboard && <Leaderboard userList={userList}/>}
+                    {showLeaderboard && <Leaderboard userList={userList} setUserList={setUserList}/>}
                 </div>
             </div>
         </div>

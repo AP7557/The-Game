@@ -112,9 +112,9 @@ def on_join(data): # data is whatever arg you pass in your emit call on client
     user_in_db = models.Person.query.filter_by(username=data['username']).first()
     if(user_in_db is None):
         add_db(data['username'])
-    users = print_db()
-    print("JOIN", users)
-    socketio.emit('user_list', {'users': users})
+        users = print_db()
+        print("JOIN", users)
+        socketio.emit('user_list', {'users': users})
 
 @socketio.on('logout')
 def on_Logout(data):
