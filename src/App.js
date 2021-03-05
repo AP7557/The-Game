@@ -32,15 +32,9 @@ function App() {
     }
 
     useEffect(() => {
-        console.log("BEFORE")
         socket.on('user_list', (data) => {
-            console.log("INNER")
-
-            console.log('User list event received!');
-            console.log(data.users);
             setUserList(data.users)
         });
-        console.log("AFTER")
     }, []);
 
     return (

@@ -16,16 +16,26 @@ export function Board({ currentUser, userList }) {
 
     const onClickButton = (id) => {
         let userClick = [...board]
-        console.log(OXs, winner)
         if (!userClick[id]) {
             if (currentUser == allPlayers[OXs]) {
                 userClick[id] = OXs
                 setBoard(userClick)
-                socket.emit('click', { message: userClick, OXs });
+                let status = getWinnerFunction(userClick)
+                if (status) {
+                    console.log(status, winner)
+                    if (status == "X") {
+                        socket.emit('winner', { winner: allPlayers['X'], loser: allPlayers['O'] });
+                    }
+                    else if (status == "O") {
+                        socket.emit('winner', { winner: allPlayers['O'], loser: allPlayers['X'] });
+                    }
+                }
+                socket.emit('click', { message: userClick, OXs, allPlayers });
             }
         }
     }
     const onReset = () => {
+        console.log("resets")
         let userClick = [...board]
         userClick.fill(null)
         socket.emit('reset', { message: userClick, OXs: "X", winner: false });
@@ -33,6 +43,7 @@ export function Board({ currentUser, userList }) {
 
     useEffect(() => {
         socket.on('username', (data) => {
+            console.log(data)
             Object.keys(data).map((item) => {
                 setAllPlayers((prev) => ({
                     ...prev,
@@ -42,23 +53,23 @@ export function Board({ currentUser, userList }) {
         })
         socket.on('click', (data) => {
             let userClick = [...data.message]
+            console.log(data.allPlayers)
+            setAllPlayers(data.allPlayers)
             setBoard(userClick);
             let status = getWinnerFunction(userClick)
             console.log(data)
             if (status) {
-                console.log(winner)
+                console.log(status, winner)
                 if (status == "X") {
-                    setWinner({ isWinner: true, userWinner: allPlayers['X'] })
-                    socket.emit('winner', { winner: allPlayers['X'], loser: allPlayers['O'] });
+                    console.log(data.allPlayers['X'])
+                    setWinner({ isWinner: true, userWinner: data.allPlayers['X'] })
                 }
                 else if (status == "O") {
-                    setWinner({ isWinner: true, userWinner: allPlayers['O'] })
-                    socket.emit('winner', { winner: allPlayers['O'], loser: allPlayers['X'] });
+                    setWinner({ isWinner: true, userWinner: data.allPlayers['O'] })
                 }
                 else if (status == "Draw") {
                     setWinner({ isWinner: true, userWinner: "DRAW" })
                 }
-                console.log(winner)
             }
             setOXs(() => {
                 if (data.OXs == "X") {
@@ -105,4 +116,3 @@ export function Board({ currentUser, userList }) {
         </div>
     )
 }
-//
