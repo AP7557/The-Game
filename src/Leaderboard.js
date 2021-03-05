@@ -6,18 +6,18 @@ const socket = io(); // Connects to socket connection
 
 export function Leaderboard({ userList }) {
     // let [userList, setUserList] = useState([]);
-
+    
     // useEffect(() => {
     //     console.log("BEFORE")
     //     socket.on('user_list', (data) => {
     //         console.log("INNER")
-
+    
     //         console.log('User list event received!');
     //         console.log(data);
     //         setUserList(data.users)
     //     });
     //     console.log("AFTER")
-
+    
     // }, []);
     return (
         <table>

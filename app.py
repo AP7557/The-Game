@@ -64,30 +64,27 @@ def on_Click(data): # data is whatever arg you pass in your emit call on client
     print(str(data))
     # This emits the 'click' event from the server to all clients except for
     # the client that emmitted the event that triggered this function
-    socketio.emit('click',  data, broadcast=True, include_self=False)
+    socketio.emit('click',  data, broadcast=True)
 
 @socketio.on('winner')
 def on_Winner(data): # data is whatever arg you pass in your emit call on client
-    print(data['winner'])
-    print(data['loser'])
-    user = models.Person.query.filter_by(username=data['winner']).first()
-    models.Person.query.filter_by(username=user.username).update({'score':user.score+1})
-    db.session.commit()
-    user = models.Person.query.filter_by(username=data['loser']).first()
-    models.Person.query.filter_by(username=user.username).update({'score':user.score-1})
+    winner = data['winner']
+    loser = data['loser']
+    db.session.query(models.Person).filter(models.Person.username==winner).update({models.Person.score: models.Person.score+1})
+    db.session.query(models.Person).filter(models.Person.username==loser).update({models.Person.score: models.Person.score-1})
     db.session.commit()
     users = print_db()
     print("WINNER", users)
     # This emits the 'click' event from the server to all clients except for
     # the client that emmitted the event that triggered this function
-    socketio.emit('user_list',  {'users': users}, broadcast=True, include_self=False)
+    socketio.emit('user_list',  {'users': users}, broadcast=True, include_self=True)
 
 @socketio.on('reset')
 def on_Reset(data): # data is whatever arg you pass in your emit call on client
     print(str(data))
     # This emits the 'click' event from the server to all clients except for
     # the client that emmitted the event that triggered this function
-    socketio.emit('reset',  data, broadcast=True, include_self=False)
+    socketio.emit('reset',  data, broadcast=True)
 
 dic = {
     "X": "",
