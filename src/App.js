@@ -4,7 +4,7 @@ import { Board } from './Board.js'
 import { Login } from './Login.js'
 import io from 'socket.io-client';
 
-const socket = io(); // Connects to socket connection
+export const socket = io(); // Connects to socket connection
 
 function App() {
     let [login, isLogin] = useState(false)

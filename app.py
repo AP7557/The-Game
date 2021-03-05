@@ -48,9 +48,6 @@ def print_db():
 @socketio.on('connect')
 def on_connect():
     print('User connected!')
-    users = print_db()
-    print("COONNECT", users)
-    socketio.emit('user_list', {'users': users})
 
 # When a client disconnects from this Socket connection, this function is run
 @socketio.on('disconnect')
@@ -121,17 +118,16 @@ def on_Logout(data):
     if(data['currentUser'] != ""):
         if dic["X"] == data['currentUser']:
             dic["X"] = ""
+            nextUser = dic['spec'].pop(0)
+            dic["X"] = nextUser
         elif dic["O"] == data['currentUser']:
             dic["O"] = ""
+            nextUser = dic['spec'].pop(0)
+            dic["O"] = nextUser
         elif( data['currentUser'] in dic['spec']):
             dic['spec'].pop(dic['spec'].index(data['currentUser']))
-            nextUser = dic['spec'].pop(0)
-            if dic["X"] == "":
-                dic["X"] = nextUser
-            elif dic["O"] == "":
-                dic["O"] = nextUser
     print(dic)
-    socketio.emit('username',  dic, broadcast=True, include_self=False)
+    socketio.emit('username',  dic, broadcast=True)
 
 # Note we need to add this line so we can import app in the python shell
 if __name__ == "__main__":

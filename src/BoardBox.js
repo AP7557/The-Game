@@ -1,8 +1,7 @@
 import { React, useState, useEffect } from 'react'
 import './styles/Board.css';
-import io from 'socket.io-client';
+import { socket } from './App.js'
 
-const socket = io(); // Connects to socket connection
 export function BoardBox({ onClickButton, value, winner, currentUser }) {
     let [player, setPlayer] = useState(false)
 

@@ -3,9 +3,7 @@ import './styles/Board.css';
 import { BoardBox } from './BoardBox.js'
 import { getWinnerFunction } from './Winner.js'
 import { Leaderboard } from './Leaderboard.js'
-import io from 'socket.io-client';
-
-const socket = io(); // Connects to socket connection
+import { socket } from './App.js'
 
 export function Board({ currentUser, userList }) {
     const [board, setBoard] = useState(Array(9).fill(null));
@@ -22,7 +20,6 @@ export function Board({ currentUser, userList }) {
                 setBoard(userClick)
                 let status = getWinnerFunction(userClick)
                 if (status) {
-                    console.log(status, winner)
                     if (status == "X") {
                         socket.emit('winner', { winner: allPlayers['X'], loser: allPlayers['O'] });
                     }
@@ -43,7 +40,6 @@ export function Board({ currentUser, userList }) {
 
     useEffect(() => {
         socket.on('username', (data) => {
-            console.log(data)
             Object.keys(data).map((item) => {
                 setAllPlayers((prev) => ({
                     ...prev,
@@ -53,15 +49,11 @@ export function Board({ currentUser, userList }) {
         })
         socket.on('click', (data) => {
             let userClick = [...data.message]
-            console.log(data.allPlayers)
             setAllPlayers(data.allPlayers)
             setBoard(userClick);
             let status = getWinnerFunction(userClick)
-            console.log(data)
             if (status) {
-                console.log(status, winner)
                 if (status == "X") {
-                    console.log(data.allPlayers['X'])
                     setWinner({ isWinner: true, userWinner: data.allPlayers['X'] })
                 }
                 else if (status == "O") {
@@ -82,7 +74,6 @@ export function Board({ currentUser, userList }) {
         });
         socket.on('reset', (data) => {
             let userClick = [...data.message]
-            console.log(data)
             setBoard(userClick);
             setWinner({ isWinner: data.winner, userWinner: "" })
             setOXs(data.OXs)
