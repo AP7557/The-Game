@@ -9,7 +9,6 @@ export const socket = io(); // Connects to socket connection
 function App() {
     let [login, isLogin] = useState(false)
     let [currentUser, setCurrentUserName] = useState("")
-    let [userList, setUserList] = useState([]);
 
     const signin = (username) => {
         if (username !== "") {
@@ -31,11 +30,6 @@ function App() {
         socket.emit('logout', { currentUser })
     }
 
-    useEffect(() => {
-        socket.on('user_list', (data) => {
-            setUserList(data.users)
-        });
-    }, []);
 
     return (
         <div>
