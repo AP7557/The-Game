@@ -127,12 +127,14 @@ def on_logout(data):
     if data['currentUser'] != "":
         if dic["X"] == data['currentUser']:
             dic["X"] = ""
-            next_user = dic['spec'].pop(0)
-            dic["X"] = next_user
+            if len(dic['spec']) is not 0:
+                next_user = dic['spec'].pop(0)
+                dic["X"] = next_user
         elif dic["O"] == data['currentUser']:
             dic["O"] = ""
-            next_user = dic['spec'].pop(0)
-            dic["O"] = next_user
+            if len(dic['spec']) is not 0:
+                next_user = dic['spec'].pop(0)
+                dic["O"] = next_user
         elif data['currentUser'] in dic['spec']:
             dic['spec'].pop(dic['spec'].index(data['currentUser']))
 
