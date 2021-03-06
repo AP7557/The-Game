@@ -11,7 +11,7 @@ The Game is an app that allows users to play a simple multiplayer Tic-Tac-Toe.
 7. `Create a new remote DB on your Heroku app: heroku addons:create heroku-postgresql:hobby-dev`
 8. `See the config vars set by Heroku for you: heroku config`
 9. `Copy paste the value for DATABASE_URL`
-10. `Run touch .env && echo "DATABASE_URL='copy-paste-database-url-here'" >> .env'
+10. `Run touch .env && echo "DATABASE_URL='copy-paste-database-url-here'" >> .env`
 11. `Run command in terminal (in your project directory): python app.py`
 12. `Run command in another terminal (in your project directory): npm run start`
 
