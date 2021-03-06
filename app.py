@@ -4,6 +4,7 @@ from flask_socketio import SocketIO
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv, find_dotenv
+import models
 
 load_dotenv(find_dotenv()) # This is to load your env variables from .env
 
@@ -14,9 +15,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
-# IMPORTANT: This must be AFTER creating db variable to prevent
-# circular import issues
-import models
+
 db.create_all()
 
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
@@ -33,56 +32,65 @@ def index(filename):
     return send_from_directory('./build', filename)
 
 def add_db(username):
+    '''Add person in database'''
     new_user = models.Person(username=username, score=100)
     db.session.add(new_user)
     db.session.commit()
 
+@socketio.on('printdb')
 def print_db():
+    '''Return everything in database in descending order'''
     all_people = models.Person.query.order_by(models.Person.score.desc()).all()
     users = []
     for person in all_people:
         users.append({'username': person.username, 'score': person.score})
-    return users
+    socketio.emit('user_list', {'users': users}, broadcast=True)
 
 # When a client connects from this Socket connection, this function is run
 @socketio.on('connect')
 def on_connect():
+    '''When someone connects to the server'''
     print('User connected!')
 
 # When a client disconnects from this Socket connection, this function is run
 @socketio.on('disconnect')
 def on_disconnect():
+    '''When someone disconnects to the server'''
     print('User disconnected!')
 
 # When a client emits the event 'click' to the server, this function is run
 # 'click' is a custom event name that we just decided
 @socketio.on('click')
-def on_Click(data): # data is whatever arg you pass in your emit call on client
+def on_click(data): # data is whatever arg you pass in your emit call on client
+    '''If the board is changed, emit the change to all the connected users'''
     print(str(data))
     # This emits the 'click' event from the server to all clients except for
     # the client that emmitted the event that triggered this function
-    socketio.emit('click',  data, broadcast=True)
+    socketio.emit('click', data, broadcast=True)
 
 @socketio.on('winner')
-def on_Winner(data): # data is whatever arg you pass in your emit call on client
+def on_winner(data): # data is whatever arg you pass in your emit call on client
+    '''Edit the score of the players'''
     winner = data['winner']
     loser = data['loser']
     print(winner, loser)
-    db.session.query(models.Person).filter(models.Person.username==winner).update({models.Person.score: models.Person.score+1})
-    db.session.query(models.Person).filter(models.Person.username==loser).update({models.Person.score: models.Person.score-1})
+    db.session.query(models.Person)\
+        .filter(models.Person.username == winner)\
+        .update({models.Person.score: models.Person.score+1})
+    db.session.query(models.Person)\
+    .filter(models.Person.username == loser)\
+    .update({models.Person.score: models.Person.score-1})
+
     db.session.commit()
-    users = print_db()
-    print("WINNER", users)
-    # This emits the 'click' event from the server to all clients except for
-    # the client that emmitted the event that triggered this function
-    socketio.emit('user_list',  {'users': users}, broadcast=True)
+    print_db()
 
 @socketio.on('reset')
-def on_Reset(data): # data is whatever arg you pass in your emit call on client
+def on_reset(data): # data is whatever arg you pass in your emit call on client
+    '''Reset the board, and all the values'''
     print(str(data))
     # This emits the 'click' event from the server to all clients except for
     # the client that emmitted the event that triggered this function
-    socketio.emit('reset',  data, broadcast=True)
+    socketio.emit('reset', data, broadcast=True)
 
 dic = {
     "X": "",
@@ -90,44 +98,45 @@ dic = {
     "spec": []
 }
 @socketio.on('username')
-def on_UserName(data):
+def on_username(data):
+    '''Find out who is playing and who is the spectator when the join'''
     print("MOUNT", str(data))
-    if dic["X"] == "" or dic['X'] == data['username'] :
+    if dic["X"] == "" or dic['X'] == data['username']:
         dic["X"] = data['username']
     elif dic["O"] == "" or dic['O'] == data['username']:
         dic["O"] = data['username']
     else:
         dic['spec'].append(data['username'])
-    print(dic)
     socketio.emit('username', dic, broadcast=True)
 
 @socketio.on('join')
 def on_join(data): # data is whatever arg you pass in your emit call on client
+    '''Add the user to the database if not already in it'''
     print(str(data))
     user_in_db = models.Person.query.filter_by(username=data['username']).first()
-    if(user_in_db is None):
+    if user_in_db is None:
         add_db(data['username'])
-    users = print_db()
-    print("JOIN", users)
-    socketio.emit('user_list', {'users': users})
+
+    print_db()
+
 
 @socketio.on('logout')
-def on_Logout(data):
+def on_logout(data):
+    '''When a user logs out get the next spectator to play'''
     print("UNMOUNT", str(data))
-    print(dic)
-    if(data['currentUser'] != ""):
+    if data['currentUser'] != "":
         if dic["X"] == data['currentUser']:
             dic["X"] = ""
-            nextUser = dic['spec'].pop(0)
-            dic["X"] = nextUser
+            next_user = dic['spec'].pop(0)
+            dic["X"] = next_user
         elif dic["O"] == data['currentUser']:
             dic["O"] = ""
-            nextUser = dic['spec'].pop(0)
-            dic["O"] = nextUser
-        elif( data['currentUser'] in dic['spec']):
+            next_user = dic['spec'].pop(0)
+            dic["O"] = next_user
+        elif data['currentUser'] in dic['spec']:
             dic['spec'].pop(dic['spec'].index(data['currentUser']))
-    print(dic)
-    socketio.emit('username',  dic, broadcast=True)
+
+    socketio.emit('username', dic, broadcast=True)
 
 # Note we need to add this line so we can import app in the python shell
 if __name__ == "__main__":

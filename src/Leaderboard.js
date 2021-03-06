@@ -3,21 +3,15 @@ import './styles/Leaderboard.css';
 import { socket } from './App.js'
 
 
-export function Leaderboard({ userList }) {
-    // let [userList, setUserList] = useState([]);
+export function Leaderboard({ currentUser }) {
+    let [userList, setUserList] = useState([]);
 
-    // useEffect(() => {
-    //     console.log("BEFORE")
-    //     socket.on('user_list', (data) => {
-    //         console.log("INNER")
-
-    //         console.log('User list event received!');
-    //         console.log(data);
-    //         setUserList(data.users)
-    //     });
-    //     console.log("AFTER")
-
-    // }, []);
+    useEffect(() => {
+        socket.emit('printdb');
+        socket.on('user_list', (data) => {
+            setUserList(data.users)
+        });
+    }, []);
     return (
         <table>
             <thead>
@@ -26,7 +20,7 @@ export function Leaderboard({ userList }) {
                 </tr>
             </thead>
             <tbody>
-                {userList.map(user => <tr>
+                {userList.map(user => <tr className={user.username === currentUser ? "currentLB" : "regularLB"}>
                         <td>{user.username}</td>
                         <td>{user.score}</td>
                     </tr>

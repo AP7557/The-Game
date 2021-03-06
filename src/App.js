@@ -12,7 +12,7 @@ function App() {
     let [userList, setUserList] = useState([]);
 
     const signin = (username) => {
-        if (username != "") {
+        if (username !== "") {
             isLogin((prev) => {
                 return !prev
             })
@@ -40,11 +40,11 @@ function App() {
     return (
         <div>
             <h1 className="game"> Tic-Tac-Toe</h1>
-            {login && <button onClick={logout}>Log-out</button>}
+            {login && <button className="logout" onClick={logout}>Log-out</button>}
             {currentUser && <h4 className="current">Your Username: {currentUser}</h4>}
             {login ?
                 (
-                    <Board currentUser={currentUser} userList={userList} setUserList={setUserList} />
+                    <Board currentUser={currentUser} />
                 ):
                     <Login signin={signin}/>}
 

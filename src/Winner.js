@@ -21,6 +21,6 @@ export function getWinnerFunction(squares) {
             count++
         }
     }
-    if (count == 9) { return "Draw" }
+    if (count === 9) { return "Draw" }
     return null;
 }

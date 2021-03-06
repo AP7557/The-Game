@@ -5,7 +5,7 @@ import { getWinnerFunction } from './Winner.js'
 import { Leaderboard } from './Leaderboard.js'
 import { socket } from './App.js'
 
-export function Board({ currentUser, userList }) {
+export function Board({ currentUser }) {
     const [board, setBoard] = useState(Array(9).fill(null));
     let [OXs, setOXs] = useState("X");
     let [winner, setWinner] = useState({ isWinner: false, userWinner: "" });
@@ -15,15 +15,15 @@ export function Board({ currentUser, userList }) {
     const onClickButton = (id) => {
         let userClick = [...board]
         if (!userClick[id]) {
-            if (currentUser == allPlayers[OXs]) {
+            if (currentUser === allPlayers[OXs]) {
                 userClick[id] = OXs
                 setBoard(userClick)
                 let status = getWinnerFunction(userClick)
                 if (status) {
-                    if (status == "X") {
+                    if (status === "X") {
                         socket.emit('winner', { winner: allPlayers['X'], loser: allPlayers['O'] });
                     }
-                    else if (status == "O") {
+                    else if (status === "O") {
                         socket.emit('winner', { winner: allPlayers['O'], loser: allPlayers['X'] });
                     }
                 }
@@ -41,7 +41,7 @@ export function Board({ currentUser, userList }) {
     useEffect(() => {
         socket.on('username', (data) => {
             Object.keys(data).map((item) => {
-                setAllPlayers((prev) => ({
+                return setAllPlayers((prev) => ({
                     ...prev,
                     [item]: data[item]
                 }))
@@ -53,21 +53,21 @@ export function Board({ currentUser, userList }) {
             setBoard(userClick);
             let status = getWinnerFunction(userClick)
             if (status) {
-                if (status == "X") {
+                if (status === "X") {
                     setWinner({ isWinner: true, userWinner: data.allPlayers['X'] })
                 }
-                else if (status == "O") {
+                else if (status === "O") {
                     setWinner({ isWinner: true, userWinner: data.allPlayers['O'] })
                 }
-                else if (status == "Draw") {
+                else if (status === "Draw") {
                     setWinner({ isWinner: true, userWinner: "DRAW" })
                 }
             }
             setOXs(() => {
-                if (data.OXs == "X") {
+                if (data.OXs === "X") {
                     return "O"
                 }
-                else if (data.OXs == "O") {
+                else if (data.OXs === "O") {
                     return "X"
                 }
             })
@@ -90,18 +90,18 @@ export function Board({ currentUser, userList }) {
                     {allPlayers['spec'].map((player) => <li className="Ps"> Spectors: {player} </li>)}
                 </div>
                 <div className="col">
-                    {(currentUser == allPlayers["X"] || currentUser == allPlayers["O"]) && winner.isWinner
+                    {(currentUser === allPlayers["X"] || currentUser === allPlayers["O"]) && winner.isWinner
                         && <button className="reset_button" onClick={onReset}>Reset</button>}
                     <h4>Current Player: {allPlayers[OXs]}</h4>
                     <div className = "board">
-                        { board.map((value, i) => <BoardBox key={i} currentUser={currentUser} value={value} winner={winner.isWinner} onClickButton={()=>onClickButton(i)}/>) }
+                        { board.map((value, i) => <BoardBox key={i} currentUser={currentUser} value={value} winner={winner.isWinner} onClickButton={()=>onClickButton(i)}/>)}
                     </div>
                 </div>
                 <div className="col">
-                    <button onClick={()=>{setShowLeaderboard((prev)=>!prev)}}>
+                    <button className="SHLeaderboard" onClick={()=>{setShowLeaderboard((prev)=>!prev)}}>
                         {showLeaderboard ? "Hide Leaderboard" : "Show Leaderboard"}
                     </button>
-                    {showLeaderboard && <Leaderboard userList={userList}/>}
+                    {showLeaderboard && <Leaderboard currentUser={currentUser}/>}
                     </div>
             </div>
         </div>

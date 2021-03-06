@@ -45,3 +45,15 @@
 	display:flex;
 	justify-content:center;
 }
+
+.SHLeaderboard{
+    background-color: crimson;
+    border: none;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    opacity: 0.6;
+    transition: 0.3s;
+    cursor: pointer;
+}
+.SHLeaderboard:hover {opacity: 1}

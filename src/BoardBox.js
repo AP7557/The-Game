@@ -14,7 +14,7 @@ export function BoardBox({ onClickButton, value, winner, currentUser }) {
     }
     useEffect(() => {
         socket.on('username', (data) => {
-            if (currentUser == data["X"] || currentUser == data["O"]) {
+            if (currentUser === data["X"] || currentUser === data["O"]) {
                 setPlayer(true)
             }
         })
