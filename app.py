@@ -5,7 +5,6 @@ from flask_socketio import SocketIO
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv, find_dotenv
-import models
 
 load_dotenv(find_dotenv())  # This is to load your env variables from .env
 
@@ -18,6 +17,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 db.create_all()
+import models
 
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 socketio = SocketIO(app,
@@ -38,6 +38,7 @@ def add_db(username):
     new_user = models.Person(username=username, score=100)
     db.session.add(new_user)
     db.session.commit()
+    return new_user
 
 
 @socketio.on('printdb')
@@ -64,21 +65,17 @@ def on_disconnect():
     print('User disconnected!')
 
 
-# When a client emits the event 'click' to the server, this function is run
-# 'click' is a custom event name that we just decided
 @socketio.on('click')
-def on_click(
-        data):  # data is whatever arg you pass in your emit call on client
+def on_click(data):
     '''If the board is changed, emit the change to all the connected users'''
     print(str(data))
-    # This emits the 'click' event from the server to all clients except for
-    # the client that emmitted the event that triggered this function
+
     socketio.emit('click', data, broadcast=True)
+    return data
 
 
 @socketio.on('winner')
-def on_winner(
-        data):  # data is whatever arg you pass in your emit call on client
+def on_winner(data):
     '''Edit the score of the players'''
     winner = data['winner']
     loser = data['loser']
@@ -95,12 +92,10 @@ def on_winner(
 
 
 @socketio.on('reset')
-def on_reset(
-        data):  # data is whatever arg you pass in your emit call on client
+def on_reset(data):
     '''Reset the board, and all the values'''
     print(str(data))
-    # This emits the 'click' event from the server to all clients except for
-    # the client that emmitted the event that triggered this function
+
     socketio.emit('reset', data, broadcast=True)
 
 
@@ -117,11 +112,13 @@ def on_username(data):
         dic["O"] = data['username']
     else:
         dic['spec'].append(data['username'])
+
     socketio.emit('username', dic, broadcast=True)
+    return dic
 
 
 @socketio.on('join')
-def on_join(data):  # data is whatever arg you pass in your emit call on client
+def on_join(data):
     '''Add the user to the database if not already in it'''
     print(str(data))
     user_in_db = models.Person.query.filter_by(
@@ -136,21 +133,23 @@ def on_join(data):  # data is whatever arg you pass in your emit call on client
 def on_logout(data):
     '''When a user logs out get the next spectator to play'''
     print("UNMOUNT", str(data))
+
     if data['currentUser'] != "":
         if dic["X"] == data['currentUser']:
             dic["X"] = ""
-            if len(dic['spec']) == 0:
+            if len(dic['spec']) != 0:
                 next_user = dic['spec'].pop(0)
                 dic["X"] = next_user
         elif dic["O"] == data['currentUser']:
             dic["O"] = ""
-            if len(dic['spec']) == 0:
+            if len(dic['spec']) != 0:
                 next_user = dic['spec'].pop(0)
                 dic["O"] = next_user
         elif data['currentUser'] in dic['spec']:
             dic['spec'].pop(dic['spec'].index(data['currentUser']))
 
     socketio.emit('username', dic, broadcast=True)
+    return dic
 
 
 # Note we need to add this line so we can import app in the python shell
