@@ -1,3 +1,4 @@
+'''Server Side'''
 import os
 from flask import Flask, send_from_directory, json
 from flask_socketio import SocketIO
@@ -28,6 +29,7 @@ socketio = SocketIO(app,
 @app.route('/', defaults={"filename": "index.html"})
 @app.route('/<path:filename>')
 def index(filename):
+    '''Initial function for server-side socketio'''
     return send_from_directory('./build', filename)
 
 
@@ -137,12 +139,12 @@ def on_logout(data):
     if data['currentUser'] != "":
         if dic["X"] == data['currentUser']:
             dic["X"] = ""
-            if len(dic['spec']) is not 0:
+            if len(dic['spec']) == 0:
                 next_user = dic['spec'].pop(0)
                 dic["X"] = next_user
         elif dic["O"] == data['currentUser']:
             dic["O"] = ""
-            if len(dic['spec']) is not 0:
+            if len(dic['spec']) == 0:
                 next_user = dic['spec'].pop(0)
                 dic["O"] = next_user
         elif data['currentUser'] in dic['spec']:
