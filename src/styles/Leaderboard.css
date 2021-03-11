@@ -1,17 +1,17 @@
 table,
 td {
-	border: 1px solid black;
+  border: 1px solid black;
 }
 
 thead,
 tfoot {
-	background-color: #333;
-	color: #fff;
+  background-color: #333;
+  color: #fff;
 }
 
 .currentLB > td {
-	background-color: yellow;
+  background-color: yellow;
 }
 .regularLB > td {
-	background-color: cyan;
+  background-color: cyan;
 }
