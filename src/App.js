@@ -20,8 +20,6 @@ function App() {
       socket.emit('username', {
         username
       });
-    } else {
-      alert('Please type in a username');
     }
   };
 

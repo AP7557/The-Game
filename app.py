@@ -49,6 +49,7 @@ def print_db():
     for person in all_people:
         users.append({'username': person.username, 'score': person.score})
     socketio.emit('user_list', {'users': users}, broadcast=True)
+    return users
 
 
 # When a client connects from this Socket connection, this function is run
