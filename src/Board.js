@@ -7,7 +7,7 @@ import Leaderboard from './Leaderboard';
 import { socket } from './App';
 
 export default function Board({ currentUser }) {
-  const [board, setBoard] = useState(Array(9).fill(null));
+  const [board, setBoard] = useState(Array(9).fill(''));
   const [OXs, setOXs] = useState('X');
   const [winner, setWinner] = useState({ isWinner: false, userWinner: '' });
   const [allPlayers, setAllPlayers] = useState({ X: '', O: '', spec: [] });
@@ -39,7 +39,7 @@ export default function Board({ currentUser }) {
   };
   const onReset = () => {
     const userClick = [...board];
-    userClick.fill(null);
+    userClick.fill('');
     socket.emit('reset', { message: userClick, OXs: 'X', winner: false });
   };
 

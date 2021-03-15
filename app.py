@@ -81,6 +81,11 @@ def on_winner(data):
     winner = data['winner']
     loser = data['loser']
     print(winner, loser)
+    update_db(winner,loser)
+    print_db()
+    return data
+
+def update_db(winner, loser):
     db.session.query(models.Person)\
         .filter(models.Person.username == winner)\
         .update({models.Person.score: models.Person.score+1})
@@ -89,8 +94,7 @@ def on_winner(data):
     .update({models.Person.score: models.Person.score-1})
 
     db.session.commit()
-    print_db()
-
+    return "data"
 
 @socketio.on('reset')
 def on_reset(data):
