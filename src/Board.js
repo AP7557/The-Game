@@ -24,12 +24,12 @@ export default function Board({ currentUser }) {
           if (status === 'X') {
             socket.emit('winner', {
               winner: allPlayers.X,
-              loser: allPlayers.O
+              loser: allPlayers.O,
             });
           } else if (status === 'O') {
             socket.emit('winner', {
               winner: allPlayers.O,
-              loser: allPlayers.X
+              loser: allPlayers.X,
             });
           }
         }
@@ -47,7 +47,7 @@ export default function Board({ currentUser }) {
     socket.on('username', (data) => {
       Object.keys(data).map((item) => setAllPlayers((prev) => ({
         ...prev,
-        [item]: data[item]
+        [item]: data[item],
       })));
     });
     socket.on('click', (data) => {
@@ -59,12 +59,12 @@ export default function Board({ currentUser }) {
         if (status === 'X') {
           setWinner({
             isWinner: true,
-            userWinner: data.allPlayers.X
+            userWinner: data.allPlayers.X,
           });
         } else if (status === 'O') {
           setWinner({
             isWinner: true,
-            userWinner: data.allPlayers.O
+            userWinner: data.allPlayers.O,
           });
         } else if (status === 'Draw') {
           setWinner({ isWinner: true, userWinner: 'DRAW' });
@@ -154,5 +154,5 @@ export default function Board({ currentUser }) {
 }
 
 Board.propTypes = {
-  currentUser: PropTypes.string.isRequired
+  currentUser: PropTypes.string.isRequired,
 };

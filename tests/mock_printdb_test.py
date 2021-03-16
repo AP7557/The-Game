@@ -174,16 +174,13 @@ class PrintTestCase(unittest.TestCase):
 
     def mocked_person_order_by(self, arg):
         '''mock order_by based on db'''
-        print("ORDER_BY")
         with patch('models.Person.score.desc', self.mocked_person_score_desc):
-            print(self.initial_db_mock, arg)
             self.initial_db_mock.sort(key=lambda item: item.get("score"),
                                       reverse=True)
             return self.initial_db_mock
 
     def mocked_person_query_all(self):
         '''mock query get all from db'''
-        print(self.initial_db_mock)
         return self.initial_db_mock
 
     def test_success(self):

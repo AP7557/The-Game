@@ -37,5 +37,5 @@ export default function Leaderboard({ currentUser }) {
 }
 
 Leaderboard.propTypes = {
-  currentUser: PropTypes.string.isRequired
+  currentUser: PropTypes.string.isRequired,
 };

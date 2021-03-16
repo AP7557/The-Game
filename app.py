@@ -69,7 +69,6 @@ def on_disconnect():
 @socketio.on('click')
 def on_click(data):
     '''If the board is changed, emit the change to all the connected users'''
-    print(str(data))
 
     socketio.emit('click', data, broadcast=True)
     return data
@@ -80,7 +79,6 @@ def on_winner(data):
     '''Edit the score of the players'''
     winner = data['winner']
     loser = data['loser']
-    print(winner, loser)
     db.session.query(models.Person)\
         .filter(models.Person.username == winner)\
         .update({models.Person.score: models.Person.score+1})
@@ -96,7 +94,6 @@ def on_winner(data):
 @socketio.on('reset')
 def on_reset(data):
     '''Reset the board, and all the values'''
-    print(str(data))
 
     socketio.emit('reset', data, broadcast=True)
 
@@ -107,7 +104,6 @@ dic = {"X": "", "O": "", "spec": []}
 @socketio.on('username')
 def on_username(data):
     '''Find out who is playing and who is the spectator when the join'''
-    print("MOUNT", str(data))
     if dic["X"] == "" or dic['X'] == data['username']:
         dic["X"] = data['username']
     elif dic["O"] == "" or dic['O'] == data['username']:
@@ -122,7 +118,6 @@ def on_username(data):
 @socketio.on('join')
 def on_join(data):
     '''Add the user to the database if not already in it'''
-    print(str(data))
     user_in_db = models.Person.query.filter_by(
         username=data['username']).first()
     if user_in_db is None:
@@ -134,7 +129,6 @@ def on_join(data):
 @socketio.on('logout')
 def on_logout(data):
     '''When a user logs out get the next spectator to play'''
-    print("UNMOUNT", str(data))
 
     if data['currentUser'] != "":
         if dic["X"] == data['currentUser']:

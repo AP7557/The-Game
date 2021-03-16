@@ -15,10 +15,10 @@ function App() {
       isLogin((prev) => !prev);
       setCurrentUserName(username);
       socket.emit('join', {
-        username
+        username,
       });
       socket.emit('username', {
-        username
+        username,
       });
     }
   };
@@ -27,7 +27,7 @@ function App() {
     isLogin(false);
     setCurrentUserName('');
     socket.emit('logout', {
-      currentUser
+      currentUser,
     });
   };
 

@@ -25,5 +25,5 @@ export default function Login({ signin }) {
 }
 
 Login.propTypes = {
-  signin: PropTypes.func.isRequired
+  signin: PropTypes.func.isRequired,
 };

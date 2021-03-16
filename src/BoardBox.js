@@ -7,7 +7,7 @@ export default function BoardBox({
   onClickButton,
   value,
   winner,
-  currentUser
+  currentUser,
 }) {
   const [player, setPlayer] = useState(false);
 
@@ -43,5 +43,5 @@ BoardBox.propTypes = {
   onClickButton: PropTypes.func.isRequired,
   value: PropTypes.string.isRequired,
   winner: PropTypes.bool.isRequired,
-  currentUser: PropTypes.string.isRequired
+  currentUser: PropTypes.string.isRequired,
 };

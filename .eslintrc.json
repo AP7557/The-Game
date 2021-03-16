@@ -17,7 +17,6 @@
     "react-hooks/exhaustive-deps": "off",
     "react/jsx-filename-extension": "off",
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
-    "import/no-cycle": "off",
-    "comma-dangle": ["error", "never"]
+    "import/no-cycle": "off"
   }
 }
